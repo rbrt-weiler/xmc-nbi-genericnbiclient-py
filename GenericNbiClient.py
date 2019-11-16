@@ -27,15 +27,16 @@ import sys
 
 from urllib3.exceptions import InsecureRequestWarning
 
-TOOL_NAME         = "XMC NBI GenericNbiClient.py"
-TOOL_VERSION      = "0.3.0"
-HTTP_USER_AGENT   = TOOL_NAME + "/" + TOOL_VERSION
-ERR_SUCCESS       = 0 # No error
-ERR_USAGE         = 1 # Usage error
-ERR_MISSARG       = 2 # Missing arguments
-ERR_HTTPREQUEST   = 10 # Error creating the HTTPS request
-ERR_XMCCONNECT    = 11 # Error connecting to XMC
-ERR_HTTPSRESPONSE = 12 # Error parsing the HTTPS response
+TOOL_NAME        = 'XMC NBI GenericNbiClient.py'
+TOOL_VERSION     = '0.3.1'
+HTTP_USER_AGENT  = TOOL_NAME + '/' + TOOL_VERSION
+JSON_MIME_TYPE   = 'application/json'
+ERR_SUCCESS      = 0  # No error
+ERR_USAGE        = 1  # Usage error
+ERR_MISSARG      = 2  # Missing arguments
+ERR_HTTPREQUEST  = 10 # Error creating the HTTPS request
+ERR_XMCCONNECT   = 11 # Error connecting to XMC
+ERR_HTTPRESPONSE = 12 # Error parsing the HTTPS response
 
 requests.packages.urllib3.disable_warnings(category = InsecureRequestWarning)
 
@@ -60,7 +61,8 @@ if args.host == '':
 
 api_url = 'https://' + args.host + ':' + str(args.port) + '/nbi/graphql'
 http_headers = {
-	'User-Agent': HTTP_USER_AGENT
+	'User-Agent': HTTP_USER_AGENT,
+	'Accept':     JSON_MIME_TYPE
 }
 http_params = {
 	'query': args.query
@@ -70,12 +72,14 @@ try:
 	r = requests.get(api_url, headers = http_headers, auth = (args.username, args.password), params = http_params, timeout = args.httptimeout, verify = not args.insecurehttps)
 	if r.status_code != requests.codes.ok:
 		r.raise_for_status()
-	result = r.json()
 except BaseException as e:
-	print('Failed to fetch data from XMC:')
-	print(e)
+	print('Error: Got status code %d instead of 200' % r.status_code, file = sys.stderr)
 	exit(ERR_XMCCONNECT)
 
-print(json.dumps(result, indent = 2))
+if r.headers['Content-Type'].find(JSON_MIME_TYPE) != 0:
+	print('Error: Content-Type %s returned instead of %s' % (r.headers['Content-Type'], JSON_MIME_TYPE), file = sys.stderr)
+	exit(ERR_HTTPRESPONSE)
+
+print(json.dumps(r.json(), indent = 2))
 
 exit(ERR_SUCCESS)
