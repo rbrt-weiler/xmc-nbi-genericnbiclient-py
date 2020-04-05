@@ -8,8 +8,8 @@ GenericNbiClient sends a query to the GraphQL-based API provided by the Northbou
 
 This project uses two defined branches:
 
-  * `master` is the primary development branch. Code within `master` may be broken at any time.
-  * `stable` is reserved for code that compiles without errors and is tested. Track `stable` if you just want to use the software.
+* `master` is the primary development branch. Code within `master` may be broken at any time.
+* `stable` is reserved for code that compiles without errors and is tested. Track `stable` if you just want to use the software.
 
 Other branches, for example for developing specific features, may be created and deleted at any time.
 
@@ -25,7 +25,7 @@ Tested with Python 3.8.0.
 
 `GenericNbiClient.py -h`:
 
-<pre>
+```text
   -h, --help            show this help message and exit
   --host HOST           XMC Hostname / IP
   --port PORT           HTTP port where XMC is listening
@@ -36,7 +36,7 @@ Tested with Python 3.8.0.
   --password PASSWORD   Password for HTTP auth
   --query QUERY         GraphQL query to send to XMC
   --version             Print version information and exit
-</pre>
+```
 
 ## Source
 
